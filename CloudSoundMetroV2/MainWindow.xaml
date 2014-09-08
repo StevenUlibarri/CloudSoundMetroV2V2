@@ -110,5 +110,46 @@
                 <DataGridTextColumn Header="Length"/>
             </DataGrid.Columns>
         </DataGrid>
+        <StackPanel Grid.Row="2">
+            <Button Content="Song Library" Click="Collection_Click"/>
+            <!--<Button Content="Add Playlist" Click="AddPlaylistPopup_Click"/>-->
+            <ListBox x:Name="PlaylistBox" ItemsSource="{Binding Path=userPlaylists}"
+                     SelectionChanged="PlaylistBox_SelectionChanged" AllowDrop="True" Drop="SongDrop">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Path=P_Name}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add Playlist" Click="ShowAddPlaylist_Click"/>
+                        <MenuItem Header="Remove Playlist" Click="RemovePlaylist_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+            <Border x:Name="AddPlayistSection" BorderBrush="DimGray"  BorderThickness=".55" Visibility="Collapsed">
+                <StackPanel>
+                    <Label></Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label>New Playlist Name:</Label>
+                        <TextBox Grid.Column="1" x:Name="PlaylistNameBox"></TextBox>
+                    </Grid>
+                    <Label></Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Width="100" Height="25" Click="AddList_Click">Add Playlist</Button>
+                        <Button Grid.Column="1" Width="100" Height="25" Click="CancelList_Click">Cancel</Button>
+                    </Grid>
+                    <Label/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </Grid>
 </Controls:MetroWindow>

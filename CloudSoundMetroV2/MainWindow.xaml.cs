@@ -384,5 +384,94 @@ namespace CloudSoundMetroV2
             }
             e.Handled = true;
         }
+
+        //Add Playlist
+        private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            AddPlayistSection.Visibility = Visibility.Visible;
+        }
+
+
+        //Remove Playlist
+        private void RemovePlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlaylistBox.SelectedItem != null)
+            {
+                Playlist SelectedPlaylist = (Playlist)PlaylistBox.SelectedItem;
+                _sqlAccess.RemovePlaylist(SelectedPlaylist.P_Id, _userId);
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    _songList = _sqlAccess.GetSongsForUser(_userId);
+                    SongDataGrid.ItemsSource = _songList;
+                    _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
+                    PlaylistBox.ItemsSource = _playlistList;
+                }));
+            }
+        }
+
+        //Add new Playlist Methods
+        //Open Window to create new Playlist
+        private void AddList_Click(object sender, RoutedEventArgs e)
+        {
+            _userId = MainWindow.UserId;
+
+            string NewPlaylistName = PlaylistNameBox.Text;
+
+            if (!string.IsNullOrWhiteSpace(NewPlaylistName))
+            {
+                Playlist NewPlaylist = new Playlist();
+                NewPlaylist.P_Name = NewPlaylistName;
+                _sqlAccess.AddPlaylist(NewPlaylist, _userId);
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    _songList = _sqlAccess.GetSongsForUser(_userId);
+                    SongDataGrid.ItemsSource = _songList;
+                    _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
+                    PlaylistBox.ItemsSource = _playlistList;
+                }));
+                PlaylistNameBox.Text = "";
+                AddPlayistSection.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void CancelList_Click(object sender, RoutedEventArgs e)
+        {
+            PlaylistNameBox.Text = "";
+            AddPlayistSection.Visibility = Visibility.Collapsed;
+        }
+
+        //End Add new Playlist Methods
+
+
+        private void Collection_Click(object sender, RoutedEventArgs e)
+        {
+            SongDataGrid.ItemsSource = _songList;
+            PlaylistBox.SelectedIndex = -1;
+        }
+
+        private void PlaylistBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox lb = (ListBox)sender;
+            if (lb.SelectedItem != null)
+            {
+                Playlist p = (Playlist)lb.SelectedItem;
+                SongDataGrid.ItemsSource = _sqlAccess.GetSongsInPlaylist(p.P_Id);
+            }
+        }
+        //End Add Song to Playlist methods
+
+        private void SongDataGridDrag(object sender, MouseButtonEventArgs e)
+        {
+            //Song s = (Song)SongDataGrid.SelectedItem;
+            //int id = s.S_Id;
+            //DataObject obj = new DataObject(id);
+            //DragDrop.DoDragDrop((DependencyObject)SongDataGrid.SelectedItem, obj, DragDropEffects.Copy);
+        }
+
+        //Not Fully Implemented
+        private void SongDrop(object sender, DragEventArgs e)
+        {
+            Song s = (Song)e.Data.GetData(typeof(Song));
+        }
     }
 }
