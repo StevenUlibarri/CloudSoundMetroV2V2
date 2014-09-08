@@ -1,0 +1,114 @@
+﻿<Controls:MetroWindow x:Class="CloudSoundMetroV2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:conv="clr-namespace:CloudSoundMetroV2.ValueConverters"
+        xmlns:comm="clr-namespace:CloudSoundMetroV2.Commands"
+        Title="CloudSound" Height="660" Width="890">
+    <Window.Resources>
+        <Image x:Key="PlayImg" Source="/Images/Play.png"/>
+        <Image x:Key="StopImg" Source="/Images/Stop.png"/>
+        <Image x:Key="PrevImg" Source="/Images/Previous.png"/>
+        <Image x:Key="NextImg" Source="/Images/Next.png"/>
+        <Image x:Key="LowVolume" Source="/Images/VolumeLow.png"/>
+        <Image x:Key="HighVolume" Source="/Images/VolumeHigh.png"/>
+        <conv:MetaDataDurationConverter x:Key="MilisToSec"/>
+        <conv:TimerDurationConverter x:Key="TimerConverter"/>
+        <conv:VolumeBarConverter x:Key="VolConverter"/>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static comm:Commands.Login}"
+                        CanExecute="LoginCanExecute"
+                        Executed="LoginExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Logout}"
+                        CanExecute="LogoutCanExecute"
+                        Executed="LogoutExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.DownloadSong}"
+                        CanExecute="DownloadSongCanExecute"
+                        Executed="DownloadSongExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.UploadSong}"
+                        CanExecute="UploadSongCanExecute"
+                        Executed="UploadSongExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Play}"
+                        CanExecute="PlayCanExecute"
+                        Executed="PlayExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Stop}"
+                        CanExecute="StopCanExecute"
+                        Executed="StopExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Next}"
+                        CanExecute="NextCanExecute"
+                        Executed="NextExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Prev}"
+                        CanExecute="PrevCanExecute"
+                        Executed="PrevExecuted"/>
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="70*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="590"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="File">
+                <MenuItem Header="Log In"/>
+                <MenuItem Header="Log Out"/>
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+            <MenuItem Header="Songs">
+                <MenuItem Header="Upload Songs"/>
+                <MenuItem Header="Download Songs"/>
+            </MenuItem>
+            <MenuItem Header="Playlists">
+                <MenuItem Header="Add Playlist"/>
+                <MenuItem Header="Remove Playlist"/>
+            </MenuItem>
+        </Menu>
+        <StackPanel x:Name="PlayerGrid" Grid.Column="1"
+                    Orientation="Horizontal">
+            <Button x:Name="PlayButton" BorderThickness="0" Content="{StaticResource PlayImg}"
+                    Height="35" Width="35" Command="{x:Static comm:Commands.Play}"/>
+            <Button x:Name="StopButton" BorderThickness="0" Content="{StaticResource StopImg}"
+                    Height="35" Width="35" Command="{x:Static comm:Commands.Stop}"/>
+            <Button x:Name="PreviousButton" BorderThickness="0" Content="{StaticResource PrevImg}"
+                    Height="35" Width="35" Command="{x:Static comm:Commands.Prev}"/>
+            <Button x:Name="NextButton" BorderThickness="0" Content="{StaticResource NextImg}"
+                    Height="35" Width="35" Command="{x:Static comm:Commands.Next}"/>
+            <Button x:Name="VolumeDown" BorderThickness="0" Content="{StaticResource LowVolume}"
+                    Height="35" Width="35"/>
+            <Slider Width="100" Minimum="0" Maximum="100"
+                    TickFrequency="1" VerticalAlignment="Center"
+                    IsSnapToTickEnabled="True" Value="{Binding Path=Volume, Converter={StaticResource VolConverter}}"/>
+            <Button x:Name="VolumeUp" BorderThickness="0" Content="{StaticResource HighVolume}"
+                    Height="35" Width="35"/>
+            <Label x:Name="CurrentTime"
+                               Content="{Binding Path=ElapsedMiliseconds, Converter={StaticResource TimerConverter}}"
+                               Width="45"
+                               Margin="5,0"
+                               HorizontalContentAlignment="Center"
+                               VerticalAlignment="Center"/>
+            <ProgressBar Width="220" Minimum="0" Maximum="1000" Value="{Binding Path=SongProgress}"
+                               HorizontalAlignment="Center"
+                               Height="15"
+                               x:Name="SongBar"
+                               VerticalAlignment="Center"/>
+            <Label x:Name="TotalTime" 
+                               Content="{Binding Path=SongLength, Converter={StaticResource TimerConverter}}"
+                               HorizontalAlignment="Right"
+                               VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <DataGrid x:Name="SongDataGrid" Grid.Column="1" Grid.Row="1"
+                  IsReadOnly="True" AutoGenerateColumns="False"
+                  VerticalGridLinesBrush="Transparent">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"
+                                            Width="160"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding S_Title}"
+                                            Width="290"/>
+                <DataGridTextColumn Header="Length"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Controls:MetroWindow>

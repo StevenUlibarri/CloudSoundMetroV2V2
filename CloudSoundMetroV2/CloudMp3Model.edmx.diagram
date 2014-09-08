@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="de1cc6d3a01f40839dcee966c142cfa1" Name="Diagram1">
+        <EntityTypeShape EntityType="CloudMp3Model.Playlist" Width="1.5" PointX="3" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CloudMp3Model.Song" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CloudMp3Model.User" Width="1.5" PointX="0.75" PointY="1.25" IsExpanded="true" />
+        <AssociationConnector Association="CloudMp3Model.FK__Playlists__P_Own__52593CB8" ManuallyRouted="false" />
+        <AssociationConnector Association="CloudMp3Model.FK__Songs__S_OwnerId__4F7CD00D" ManuallyRouted="false" />
+        <AssociationConnector Association="CloudMp3Model.PlaylistSongs" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
