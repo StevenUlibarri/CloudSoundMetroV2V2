@@ -13,7 +13,7 @@ namespace CloudSoundMetroV2.ValueConverters
         {
             int milis = (int)value;
             TimeSpan span = TimeSpan.FromSeconds(milis / 1000);
-            return span.ToString(@"h\m\:ss");
+            return span.ToString(@"m\:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
