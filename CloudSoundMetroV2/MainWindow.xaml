@@ -101,7 +101,7 @@
         </StackPanel>
         <DataGrid x:Name="SongDataGrid" Grid.Column="1" Grid.Row="1"
                   IsReadOnly="True" AutoGenerateColumns="False"
-                  VerticalGridLinesBrush="Transparent">
+                  VerticalGridLinesBrush="Transparent" MouseLeftButtonDown="SongDataGridDrag">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"
                                             Width="160"/>

@@ -460,18 +460,25 @@ namespace CloudSoundMetroV2
         }
         //End Add Song to Playlist methods
 
+        //Begin Drag and Drop Stuff
+        //Not Fully Implemented
         private void SongDataGridDrag(object sender, MouseButtonEventArgs e)
         {
-            //Song s = (Song)SongDataGrid.SelectedItem;
+            Song s = (Song)SongDataGrid.SelectedItem;
             //int id = s.S_Id;
             //DataObject obj = new DataObject(id);
             //DragDrop.DoDragDrop((DependencyObject)SongDataGrid.SelectedItem, obj, DragDropEffects.Copy);
+            DragDrop.DoDragDrop(SongDataGrid, s, DragDropEffects.Copy);
         }
 
-        //Not Fully Implemented
         private void SongDrop(object sender, DragEventArgs e)
         {
             Song s = (Song)e.Data.GetData(typeof(Song));
+            //Playlist p = (Playlist)PlaylistBox.SelectedItem;
+            //Point p = Mouse.GetPosition(PlaylistBox);
+            //int index = PlaylistBox.
+            //_sqlAccess.AddSongToPlaylist(s.S_Id, p.P_Id);
         }
+        //End Drag and Drop Stuff
     }
 }
