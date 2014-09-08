@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'c:\users\steven ulibarri\documents\visual studio 2013\Projects\CloudSoundMetroV2\CloudSoundMetroV2\CloudMp3Model.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\Alexander\Documents\GitHub\CloudSoundMetroV2V2\CloudSoundMetroV2\CloudMp3Model.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
