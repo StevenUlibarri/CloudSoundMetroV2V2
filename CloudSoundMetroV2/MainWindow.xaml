@@ -102,12 +102,23 @@
         <DataGrid x:Name="SongDataGrid" Grid.Column="1" Grid.Row="1"
                   IsReadOnly="True" AutoGenerateColumns="False"
                   VerticalGridLinesBrush="Transparent" MouseLeftButtonDown="SongDataGridDrag">
+
+            <DataGrid.Resources>
+                
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"
                                             Width="160"/>
                 <DataGridTextColumn Header="Title" Binding="{Binding S_Title}"
                                             Width="290"/>
-                <DataGridTextColumn Header="Length"/>
+                <DataGridTextColumn Header="Length"
+                                    Binding="{Binding S_Length, Converter={StaticResource MilisToSec}}">
+                    <DataGridTextColumn.CellStyle>
+                        <Style>
+                            <Setter Property="FrameworkElement.HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Row="2">

@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using CloudSoundMetroV2.DataAccessLayer;
 using System.IO;
 using Microsoft.Win32;
+using Cloudmp3.Windows;
 
 namespace CloudSoundMetroV2
 {
@@ -82,7 +83,7 @@ namespace CloudSoundMetroV2
                 PlayerGrid.DataContext = _localPlayer;
                 CurrentSongIndex = -1;
 
-                //this.Loaded += new RoutedEventHandler(LoginPrompt);   
+                this.Loaded += new RoutedEventHandler(LoginPrompt);   
             }
             catch (Exception e)
             {
@@ -168,25 +169,25 @@ namespace CloudSoundMetroV2
 
         private void LoginExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //Login log = new Login();
-            //log.Top = this.Top + 50;
-            //log.Left = this.Left + 50;
-            //log.ShowDialog();
-            //log.Focus();
+            Login log = new Login();
+            log.Top = this.Top + 50;
+            log.Left = this.Left + 50;
+            log.ShowDialog();
+            log.Focus();
 
-            //if (log.UserName != null)
-            //{
-            //    if (_sqlAccess.ValidateUserName(log.UserName, log.Password))
-            //    {
-            //        _userId = _sqlAccess.GetUserID(log.UserName);
-            //        LoggedIn = true;
-            //        NotificationsLabel.Content = "You are logged in as " + log.UserName;
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show("Incorrect Username or Password.");
-            //    }
-            //}
+            if (log.UserName != null)
+            {
+                if (_sqlAccess.ValidateUserName(log.UserName, log.Password))
+                {
+                    _userId = _sqlAccess.GetUserID(log.UserName);
+                    LoggedIn = true;
+                    Content = "You are logged in as " + log.UserName;
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect Username or Password.");
+                }
+            }
             if (e != null)
             {
                 e.Handled = true;
