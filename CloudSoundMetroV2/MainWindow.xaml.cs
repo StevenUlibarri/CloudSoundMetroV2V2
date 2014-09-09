@@ -641,7 +641,8 @@ namespace CloudSoundMetroV2
 
         private void hid_Click(object sender, RoutedEventArgs e)
         {
-            progPanel.Visibility = Visibility.Collapsed;
+            rng.Visibility = Visibility.Collapsed;
+            hid.Visibility = Visibility.Collapsed;
         }
         
     }
