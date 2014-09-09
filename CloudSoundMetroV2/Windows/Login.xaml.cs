@@ -33,21 +33,36 @@ namespace Cloudmp3.Windows
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password))
+            try
             {
-
-                UserName = UserNameBox.Text;
-                Password = PasswordBox.Password;
-                while (Password != PasswordBoxConfrim.Password)
+                if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password) && !string.IsNullOrEmpty(PasswordBoxConfrim.Password))
                 {
-                    PasswordInvalid.Visibility = Visibility.Visible;
-                    LoginButton_Click(null, null);
+
+                    UserName = UserNameBox.Text;
+                    Password = PasswordBox.Password;
+                    if (Password != PasswordBoxConfrim.Password)
+                    {
+                        PasswordInvalid.Visibility = Visibility.Visible;
+                        UserName = null;
+                        Password = null;
+                        PasswordBox.Password = "";
+                        PasswordBoxConfrim.Password = "";
+
+                    }
+                    else
+                    {
+                        this.Close();
+                    }
                 }
-                this.Close();
+                else
+                {
+                    MessageBox.Show("User Name and Password must not be blank.");
+                }
             }
-            else
+            catch (StackOverflowException)
             {
-                MessageBox.Show("User Name and Password must not be blank.");
+                
+                
             }
         }
 
