@@ -288,10 +288,8 @@ namespace CloudSoundMetroV2
             Task.Factory.StartNew(() =>
             {
                 _blobAccess.DownloadSong(path);
-                //rng.IsActive = false;
-                //hid.Visibility = Visibility.Collapsed;
-                //rng.Visibility = Visibility.Collapsed;
             });
+            
             e.Handled = true;
         }
 
