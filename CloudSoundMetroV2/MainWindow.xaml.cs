@@ -282,13 +282,13 @@ namespace CloudSoundMetroV2
         private void DownloadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             Song s = (Song)SongDataGrid.SelectedItem;
-            string path = s.S_Path;
+            string path = s.S_Title;
             rng.Visibility = Visibility.Visible;
             rng.IsActive = true;
             hid.Visibility = Visibility.Visible;
             Task.Factory.StartNew(() =>
             {
-                _blobAccess.DownloadSong(Path.GetFileName(path));
+                _blobAccess.DownloadSong(path);
                 //rng.IsActive = false;
                 //hid.Visibility = Visibility.Collapsed;
                 //rng.Visibility = Visibility.Collapsed;
