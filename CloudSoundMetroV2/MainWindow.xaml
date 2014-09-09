@@ -106,10 +106,7 @@
                   VerticalGridLinesBrush="Transparent" MouseLeftButtonDown="SongDataGridDrag">
 
             <DataGrid.Resources>
-<<<<<<< HEAD
-
-=======
-                <Style x:Key="DataGridColumnHeaderDataGridCellStyle"
+          <Style x:Key="DataGridColumnHeaderDataGridCellStyle"
                     TargetType="{x:Type DataGridCell}" 
                     BasedOn="{StaticResource {x:Type DataGridCell}}">
                     <Setter Property="Template">
@@ -122,7 +119,7 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
->>>>>>> origin/master
+
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"
