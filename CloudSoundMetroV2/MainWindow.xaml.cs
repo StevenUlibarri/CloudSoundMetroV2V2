@@ -219,14 +219,14 @@ namespace CloudSoundMetroV2
         }
         private void ActiveProgress()
         {
-            rng.Visibility = Visibility.Visible;
+            progPanel.Visibility = Visibility.Visible;
             rng.IsActive = true;
         }
 
         private void InactProgress()
         {
             rng.IsActive = false;
-            rng.Visibility = Visibility.Collapsed;
+            progPanel.Visibility = Visibility.Collapsed;
         }
 
         private void UploadSongExecuted(object sender, ExecutedRoutedEventArgs e)
