@@ -254,6 +254,7 @@ namespace CloudSoundMetroV2
 
             if (files.Length != 0)
             {
+                proglabe.Content = chooseFile.FileName + "is being Uploaded";
                 Task.Factory.StartNew(() =>
                 {
                     foreach (string f in files)
