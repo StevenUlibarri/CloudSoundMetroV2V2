@@ -161,6 +161,7 @@
         <StackPanel Grid.Row="2">
             <StackPanel x:Name="progPanel">
                 <Controls:ProgressRing x:Name="rng" IsActive="False" Visibility="Collapsed"/>
+                <Button x:Name="hid" Content="Hide" Width="90" Click="hid_Click" Visibility="Collapsed"/>
             </StackPanel>
             <Button Content="Song Library" Click="Collection_Click" Margin="0,9,0,0" BorderThickness="0"/>
             <!--<Button Content="Add Playlist" Click="AddPlaylistPopup_Click"/>-->
