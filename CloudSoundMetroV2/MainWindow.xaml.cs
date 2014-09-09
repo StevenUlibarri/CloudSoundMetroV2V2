@@ -153,7 +153,7 @@ namespace CloudSoundMetroV2
                     _songList = _sqlAccess.GetSongsForUser(_userId);
                     SongDataGrid.ItemsSource = _songList;
                     _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
-                    //PlaylistBox.ItemsSource = _playlistList;
+                    PlaylistBox.ItemsSource = _playlistList;
                 }));
             }
         }
@@ -243,10 +243,10 @@ namespace CloudSoundMetroV2
                         {
                             //backgroundWorker1.RunWorkerAsync();
                             _songList = _sqlAccess.GetSongsForUser(_userId);
-                            //if (PlaylistBox.SelectedIndex == -1)
-                            //{
-                            //    SongDataGrid.ItemsSource = _songList;
-                            //}
+                            if (PlaylistBox.SelectedIndex == -1)
+                            {
+                                SongDataGrid.ItemsSource = _songList;
+                            }
                         }));
                     }
                 });
