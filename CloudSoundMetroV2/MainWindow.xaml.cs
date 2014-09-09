@@ -427,10 +427,10 @@ namespace CloudSoundMetroV2
         }
 
         //Add Playlist
-        //private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
-        //{
-        //    AddPlayistSection.Visibility = Visibility.Visible;
-        //}
+        private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            AddPlayistSection.Visibility = Visibility.Visible;
+        }
 
 
         //Remove Playlist
@@ -452,34 +452,34 @@ namespace CloudSoundMetroV2
 
         //Add new Playlist Methods
         //Open Window to create new Playlist
-        //private void AddList_Click(object sender, RoutedEventArgs e)
-        //{
-        //    _userId = MainWindow.UserId;
+        private void AddList_Click(object sender, RoutedEventArgs e)
+        {
+            _userId = MainWindow.UserId;
 
-        //    string NewPlaylistName = PlaylistNameBox.Text;
+            string NewPlaylistName = PlaylistNameBox.Text;
 
-        //    if (!string.IsNullOrWhiteSpace(NewPlaylistName))
-        //    {
-        //        Playlist NewPlaylist = new Playlist();
-        //        NewPlaylist.P_Name = NewPlaylistName;
-        //        _sqlAccess.AddPlaylist(NewPlaylist, _userId);
-        //        Dispatcher.BeginInvoke(new Action(delegate()
-        //        {
-        //            _songList = _sqlAccess.GetSongsForUser(_userId);
-        //            SongDataGrid.ItemsSource = _songList;
-        //            _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
-        //            PlaylistBox.ItemsSource = _playlistList;
-        //        }));
-        //        PlaylistNameBox.Text = "";
-        //        AddPlayistSection.Visibility = Visibility.Collapsed;
-        //    }
-        //}
+            if (!string.IsNullOrWhiteSpace(NewPlaylistName))
+            {
+                Playlist NewPlaylist = new Playlist();
+                NewPlaylist.P_Name = NewPlaylistName;
+                _sqlAccess.AddPlaylist(NewPlaylist, _userId);
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    _songList = _sqlAccess.GetSongsForUser(_userId);
+                    SongDataGrid.ItemsSource = _songList;
+                    _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
+                    PlaylistBox.ItemsSource = _playlistList;
+                }));
+                PlaylistNameBox.Text = "";
+                AddPlayistSection.Visibility = Visibility.Collapsed;
+            }
+        }
 
-        //private void CancelList_Click(object sender, RoutedEventArgs e)
-        //{
-        //    PlaylistNameBox.Text = "";
-        //    AddPlayistSection.Visibility = Visibility.Collapsed;
-        //}
+        private void CancelList_Click(object sender, RoutedEventArgs e)
+        {
+            PlaylistNameBox.Text = "";
+            AddPlayistSection.Visibility = Visibility.Collapsed;
+        }
 
         //End Add new Playlist Methods
 
