@@ -159,6 +159,10 @@
         </ScrollViewer>
         
         <StackPanel Grid.Row="2">
+            <StackPanel>
+                <Controls:ProgressRing x:Name="rng" Visibility="Visible"/>
+                <Label x:Name="proglabe"/>
+            </StackPanel>
             <Button Content="Song Library" Click="Collection_Click" Margin="0,9,0,0" BorderThickness="0"/>
             <!--<Button Content="Add Playlist" Click="AddPlaylistPopup_Click"/>-->
             <ListBox x:Name="PlaylistBox" ItemsSource="{Binding Path=userPlaylists}"

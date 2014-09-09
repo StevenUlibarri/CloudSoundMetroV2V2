@@ -27,22 +27,42 @@ namespace Cloudmp3.Windows
             InitializeComponent();
             UserName = null;
             Password = null;
-            CreateAcc.Focus();
+            UserNameBox.Focus();
 
         }
         private void CreateAcc_Click(object sender, RoutedEventArgs e)
         {
             ValidateUserName(this.UserNameBox.Text, this.PasswordBox.Password);
-            if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password))
+            try
             {
+                if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password) && !string.IsNullOrEmpty(PasswordBoxConfrim.Password))
+                {
 
-                UserName = UserNameBox.Text;
-                Password = PasswordBox.Password;
-                this.Close();
+                    UserName = UserNameBox.Text;
+                    Password = PasswordBox.Password;
+                    if (Password != PasswordBoxConfrim.Password)
+                    {
+                        PasswordInvalid.Visibility = Visibility.Visible;
+                        UserName = null;
+                        Password = null;
+                        PasswordBox.Password = "";
+                        PasswordBoxConfrim.Password = "";
+
+                    }
+                    else
+                    {
+                        this.Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("User Name and Password must not be blank.");
+                }
             }
-            else
+            catch (StackOverflowException)
             {
-                MessageBox.Show("User Name and Password must not be blank.");
+                
+                
             }
         }
         public void ValidateUserName(string usrName, string pass)
@@ -62,7 +82,6 @@ namespace Cloudmp3.Windows
 
                 }
             }
-            this.Close();
         }
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {

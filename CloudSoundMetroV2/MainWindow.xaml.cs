@@ -217,9 +217,21 @@ namespace CloudSoundMetroV2
             }
             e.Handled = true;
         }
+        private void ActiveProgress()
+        {
+            rng.Visibility = Visibility.Visible;
+            rng.IsActive = true;
+        }
+
+        private void InactProgress()
+        {
+            rng.IsActive = false;
+            rng.Visibility = Visibility.Collapsed;
+        }
 
         private void UploadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
+            ActiveProgress();
             OpenFileDialog chooseFile = new OpenFileDialog();
             chooseFile.Filter = "Music Files (.mp3)|*.mp3|All Files (*.*)|*.*";
             chooseFile.FilterIndex = 1;
@@ -229,6 +241,7 @@ namespace CloudSoundMetroV2
 
             if (files.Length != 0)
             {
+                //proglabe.Content = chooseFile.FileName + "is being Uploaded";
                 Task.Factory.StartNew(() =>
                 {
                     foreach (string f in files)
@@ -246,6 +259,7 @@ namespace CloudSoundMetroV2
                 });
             }
             e.Handled = true;
+            InactProgress();
         }
 
         private void DownloadSongCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -259,14 +273,15 @@ namespace CloudSoundMetroV2
 
         private void DownloadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
+            ActiveProgress();
             Song s = (Song)SongDataGrid.SelectedItem;
             string path = s.S_Path;
             Task.Factory.StartNew(() =>
             {
                 _blobAccess.DownloadSong(Path.GetFileName(path));
             });
-
             e.Handled = true;
+            InactProgress();
         }
 
         private void PlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -291,15 +306,6 @@ namespace CloudSoundMetroV2
                         CurrentSongIndex = SongDataGrid.SelectedIndex;
                         Song s = (Song)SongDataGrid.SelectedItem;
                         _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                        bool EventSet = false;
-                        while (!EventSet)
-                        {
-                            if (_localPlayer.GetWaveOut() != null)
-                            {
-                                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-                                EventSet = true;
-                            }
-                        }
                     }
                     else
                     {
@@ -311,15 +317,6 @@ namespace CloudSoundMetroV2
                         CurrentSongIndex = SongDataGrid.SelectedIndex;
                         Song s = (Song)SongDataGrid.SelectedItem;
                         _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                        bool EventSet = false;
-                        while (!EventSet)
-                        {
-                            if (_localPlayer.GetWaveOut() != null)
-                            {
-                                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-                                EventSet = true;
-                            }
-                        }
                     }
                 }
                 else
@@ -333,55 +330,6 @@ namespace CloudSoundMetroV2
 
         private void MainWindow_PlaybackStopped(object sender, NAudio.Wave.StoppedEventArgs e)
         {
-            Console.WriteLine("DID THIS WORK?");
-            if (RepeatOne)
-            {
-                Dispatcher.BeginInvoke(new Action(delegate()
-                {
-                    _localPlayer.Stop();
-                    SongDataGrid.SelectedIndex = CurrentSongIndex;
-                    Song s = (Song)SongDataGrid.SelectedItem;
-                    
-                }));
-                _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-            }
-            else
-            {
-                if (CurrentSongIndex != SongDataGrid.Items.Count - 1)
-                {
-                    
-                    Dispatcher.BeginInvoke(new Action(delegate()
-                    {
-                        _localPlayer.Stop();
-                        SongDataGrid.SelectedIndex = (CurrentSongIndex == SongDataGrid.Items.Count - 1) ? 0 : ++SongDataGrid.SelectedIndex;
-                        CurrentSongIndex = SongDataGrid.SelectedIndex;
-                        Song s = (Song)SongDataGrid.SelectedItem;
-                        _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-                    }));
-                }
-                else if (CurrentSongIndex == SongDataGrid.Items.Count - 1 && RepeatAll)
-                {
-                    Dispatcher.BeginInvoke(new Action(delegate()
-                    {
-                        _localPlayer.Stop();
-                        SongDataGrid.SelectedIndex = (CurrentSongIndex == SongDataGrid.Items.Count - 1) ? 0 : ++SongDataGrid.SelectedIndex;
-                        CurrentSongIndex = SongDataGrid.SelectedIndex;
-                        Song s = (Song)SongDataGrid.SelectedItem;
-                        _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-                    }));
-                }
-                else
-                {
-                    Dispatcher.BeginInvoke(new Action(delegate()
-                    {
-                        _isPlaying = false;
-                        _localPlayer.Stop();
-                    }));
-                }
-            }
             //if repeat one play again
             //if not on last song play next
             //else
@@ -572,15 +520,6 @@ namespace CloudSoundMetroV2
                 CurrentSongIndex = SongDataGrid.SelectedIndex;
                 Song s = (Song)SongDataGrid.SelectedItem;
                 _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-                bool EventSet = false;
-                while (!EventSet)
-                {
-                    if (_localPlayer.GetWaveOut() != null)
-                    {
-                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
-                        EventSet = true;
-                    }
-                }
             }
         }
 
