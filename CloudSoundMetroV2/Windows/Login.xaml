@@ -28,5 +28,6 @@
                 <Button x:Name="CreateAcc" Content="Create"  Click="CreateAccBox_Click"/>
             </UniformGrid>
         </StackPanel>
+        <Label Grid.Column="1" Grid.Row="4" Content="Passwords Dont Match" Visibility="Collapsed"  x:Name="PasswordInvalid"/>
     </Grid>
 </Window>

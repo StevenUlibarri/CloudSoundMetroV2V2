@@ -38,7 +38,13 @@ namespace Cloudmp3.Windows
 
                 UserName = UserNameBox.Text;
                 Password = PasswordBox.Password;
+                while (Password != PasswordBoxConfrim.Password)
+                {   
+                        PasswordInvalid.Visibility = Visibility.Visible;
+                        CreateAcc_Click(null, null);
+                }
                 this.Close();
+                
             }
             else
             {
