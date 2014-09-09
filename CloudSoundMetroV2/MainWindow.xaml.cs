@@ -78,9 +78,8 @@ namespace CloudSoundMetroV2
             {
                 InitializeComponent();
                 Setup();
-                //LoggedIn = false;
+                LoggedIn = false;
                 _userId = 1;
-                LoggedIn = true;
                 IsPlaying = false;
                 _blobAccess = new AzureAccess();
                 _localPlayer = new StreamMp3Player();
@@ -99,7 +98,7 @@ namespace CloudSoundMetroV2
 
         private void LoginPrompt(object sender, RoutedEventArgs e)
         {
-            //LoginExecuted(null, null);
+            LoginExecuted(null, null);
 
         }
 
