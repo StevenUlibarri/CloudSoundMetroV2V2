@@ -19,6 +19,7 @@ using System.IO;
 using Microsoft.Win32;
 using Cloudmp3.Windows;
 using System.Windows.Controls.Primitives;
+using CloudSoundMetroV2.Windows;
 
 namespace CloudSoundMetroV2
 {
@@ -77,7 +78,9 @@ namespace CloudSoundMetroV2
             {
                 InitializeComponent();
                 Setup();
-                LoggedIn = false;
+                //LoggedIn = false;
+                _userId = 1;
+                LoggedIn = true;
                 IsPlaying = false;
                 _blobAccess = new AzureAccess();
                 _localPlayer = new StreamMp3Player();
@@ -96,7 +99,8 @@ namespace CloudSoundMetroV2
 
         private void LoginPrompt(object sender, RoutedEventArgs e)
         {
-            LoginExecuted(null, null);
+            //LoginExecuted(null, null);
+
         }
 
         private void PromptLogin(object sender, RoutedEventArgs e)
@@ -275,10 +279,10 @@ namespace CloudSoundMetroV2
         {
             ActiveProgress();
             Song s = (Song)SongDataGrid.SelectedItem;
-            string path = s.S_Path;
+            string path = s.S_Title;
             Task.Factory.StartNew(() =>
             {
-                _blobAccess.DownloadSong(Path.GetFileName(path));
+                _blobAccess.DownloadSong(path);
             });
             e.Handled = true;
             InactProgress();

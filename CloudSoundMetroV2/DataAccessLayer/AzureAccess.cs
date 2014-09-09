@@ -67,7 +67,6 @@ namespace CloudSoundMetroV2.DataAccessLayer
                         isCompleted = false;
                         string fileName = Path.GetFileName(filePath);
                         TagLib.File tagFile = TagLib.File.Create(filePath);
-                        CloudBlockBlob blockBlob = _container.GetBlockBlobReference(fileName);
                         var user = (from u in context.Users
                                     where u.U_Id == userID
                                     select u).SingleOrDefault();
@@ -80,6 +79,7 @@ namespace CloudSoundMetroV2.DataAccessLayer
                         {
                             s = tagFile.Tag.Title;
                         }
+                        CloudBlockBlob blockBlob = _container.GetBlockBlobReference(s);
                         Song newSong = new Song()
                         {
                             S_Artist = tagFile.Tag.FirstPerformer,
@@ -126,6 +126,8 @@ namespace CloudSoundMetroV2.DataAccessLayer
 
             }
         }
+        //https://cloudmp3.blob.core.windows.net/cloudmp3/C-Loc%20feat.%20Lil%20Boosie%20-%20What%20Must%20I%20Say%20(Instrumental)%20(G.%20Goryachev)%20-%20[MP3Juices.com].mp3
+        //"C-Loc%20feat.%20Lil%20Boosie%20-%20What%20Must%20I%20Say%20(Instrumental)%20(G.%20Goryachev)%20-%20[MP3Juices.com].mp3"
 
         public ObservableCollection<string> GetCloudSongs()
         {
