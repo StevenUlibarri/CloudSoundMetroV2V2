@@ -230,10 +230,21 @@ namespace CloudSoundMetroV2
             }
             e.Handled = true;
         }
+        private void ActiveProgress()
+        {
+            rng.Visibility = Visibility.Visible;
+            rng.IsActive = true;
+        }
+
+        private void InactProgress()
+        {
+            rng.IsActive = false;
+            rng.Visibility = Visibility.Collapsed;
+        }
 
         private void UploadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //load.Visibility = Visibility.Visible;
+            ActiveProgress();
             OpenFileDialog chooseFile = new OpenFileDialog();
             chooseFile.Filter = "Music Files (.mp3)|*.mp3|All Files (*.*)|*.*";
             chooseFile.FilterIndex = 1;
@@ -262,6 +273,7 @@ namespace CloudSoundMetroV2
             }
 
             e.Handled = true;
+            InactProgress();
         }
 
         private void DownloadSongCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -275,7 +287,7 @@ namespace CloudSoundMetroV2
 
         private void DownloadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //bload.Visibility = Visibility.Visible;
+            ActiveProgress();
             Song s = (Song)SongDataGrid.SelectedItem;
             string path = s.S_Path;
             Task.Factory.StartNew(() =>
@@ -285,7 +297,7 @@ namespace CloudSoundMetroV2
 
             e.Handled = true;
 
-
+            InactProgress();
         }
 
         private void PlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
