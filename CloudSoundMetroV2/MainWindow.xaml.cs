@@ -231,7 +231,6 @@ namespace CloudSoundMetroV2
 
         private void UploadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            ActiveProgress();
             OpenFileDialog chooseFile = new OpenFileDialog();
             chooseFile.Filter = "Music Files (.mp3)|*.mp3|All Files (*.*)|*.*";
             chooseFile.FilterIndex = 1;
@@ -241,7 +240,8 @@ namespace CloudSoundMetroV2
 
             if (files.Length != 0)
             {
-                //proglabe.Content = chooseFile.FileName + "is being Uploaded";
+                rng.Visibility = Visibility.Visible;
+                rng.IsActive = true;
                 Task.Factory.StartNew(() =>
                 {
                     foreach (string f in files)
@@ -254,12 +254,13 @@ namespace CloudSoundMetroV2
                             {
                                 SongDataGrid.ItemsSource = _songList;
                             }
+                            rng.IsActive = false;
+                            rng.Visibility = Visibility.Collapsed;
                         }));
                     }
                 });
             }
             e.Handled = true;
-            InactProgress();
         }
 
         private void DownloadSongCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -273,15 +274,17 @@ namespace CloudSoundMetroV2
 
         private void DownloadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            ActiveProgress();
             Song s = (Song)SongDataGrid.SelectedItem;
             string path = s.S_Path;
+            rng.Visibility = Visibility.Visible;
+            rng.IsActive = true;
             Task.Factory.StartNew(() =>
             {
                 _blobAccess.DownloadSong(Path.GetFileName(path));
+                rng.IsActive = false;
+                rng.Visibility = Visibility.Collapsed;
             });
             e.Handled = true;
-            InactProgress();
         }
 
         private void PlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
