@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace CloudSoundMetroV2.Mp3Players
         void Play(string path, int length);
         void Stop();
         void Pause();
+        IWavePlayer GetWaveOut();
     }
 }

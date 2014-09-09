@@ -17,5 +17,9 @@ namespace CloudSoundMetroV2.Commands
         public static RoutedUICommand Stop = new RoutedUICommand("Stop Song", "Stop", typeof(Commands));
         public static RoutedUICommand Next = new RoutedUICommand("Next Song", "Next", typeof(Commands));
         public static RoutedUICommand Prev = new RoutedUICommand("Previous Song", "Prev", typeof(Commands));
+        public static RoutedUICommand Exit = new RoutedUICommand("Exit", "Exit", typeof(Commands));
+        public static RoutedUICommand RepeatOne = new RoutedUICommand("Repeate One", "Repeat One", typeof(Commands));
+        public static RoutedUICommand RepeatAll = new RoutedUICommand("Repeate All", "Repeat All", typeof(Commands));
+
     }
 }

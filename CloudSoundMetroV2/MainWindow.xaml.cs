@@ -18,6 +18,7 @@ using CloudSoundMetroV2.DataAccessLayer;
 using System.IO;
 using Microsoft.Win32;
 using Cloudmp3.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace CloudSoundMetroV2
 {
@@ -35,6 +36,8 @@ namespace CloudSoundMetroV2
         private BitmapImage _playImage = new BitmapImage(new Uri("Images/Play.png", UriKind.Relative));
         private BitmapImage _pauseImage = new BitmapImage(new Uri("Images/Pause.png", UriKind.Relative));
 
+        public bool RepeatOne { get; set; }
+        public bool RepeatAll { get; set; }
 
         private int CurrentSongIndex { get; set; }
         private static int _userId;
@@ -74,8 +77,7 @@ namespace CloudSoundMetroV2
             {
                 InitializeComponent();
                 Setup();
-                _userId = 1;
-                LoggedIn = true;
+                LoggedIn = false;
                 IsPlaying = false;
                 _blobAccess = new AzureAccess();
                 _localPlayer = new StreamMp3Player();
@@ -84,13 +86,6 @@ namespace CloudSoundMetroV2
                 CurrentSongIndex = -1;
 
                 this.Loaded += new RoutedEventHandler(LoginPrompt);
-                this.Loaded += delegate
-                {
-                    this.FileExitItem.Click += (s, e) =>
-                    {
-                        this.Close();
-                    };
-                };
             }
             catch (Exception e)
             {
@@ -137,15 +132,6 @@ namespace CloudSoundMetroV2
             }
         }
 
-        private void Song_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            IsPlaying = true;
-            _localPlayer.Stop();
-            CurrentSongIndex = SongDataGrid.SelectedIndex;
-            Song s = (Song)SongDataGrid.SelectedItem;
-            _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
-        }
-
         private void LoginChange()
         {
             if (!_loggedIn)
@@ -188,7 +174,6 @@ namespace CloudSoundMetroV2
                 {
                     _userId = _sqlAccess.GetUserID(log.UserName);
                     LoggedIn = true;
-                    //Content = "You are logged in as " + log.UserName;
                 }
                 else
                 {
@@ -207,19 +192,21 @@ namespace CloudSoundMetroV2
             {
                 e.CanExecute = true;
             }
-                e.Handled = true;
+            e.Handled = true;
         }
 
         private void LogoutExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             _localPlayer.Stop();
             _userId = 0;
+            _songList = null;
+            _playlistList = null;
             SongDataGrid.ItemsSource = null;
+            PlaylistBox.ItemsSource = null;
+            RepeatAll = false;
+            RepeatOne = false;
             LoggedIn = false;
             e.Handled = true;
-            // This is obviously sleepy code....
-            //Content = "You have logged out. Good Bye";
-
         }
 
         private void UploadSongCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -233,7 +220,6 @@ namespace CloudSoundMetroV2
 
         private void UploadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //load.Visibility = Visibility.Visible;
             OpenFileDialog chooseFile = new OpenFileDialog();
             chooseFile.Filter = "Music Files (.mp3)|*.mp3|All Files (*.*)|*.*";
             chooseFile.FilterIndex = 1;
@@ -250,7 +236,6 @@ namespace CloudSoundMetroV2
                         _blobAccess.UploadSong(f, _userId);
                         Dispatcher.BeginInvoke(new Action(delegate()
                         {
-                            //backgroundWorker1.RunWorkerAsync();
                             _songList = _sqlAccess.GetSongsForUser(_userId);
                             if (PlaylistBox.SelectedIndex == -1)
                             {
@@ -260,7 +245,6 @@ namespace CloudSoundMetroV2
                     }
                 });
             }
-
             e.Handled = true;
         }
 
@@ -275,7 +259,6 @@ namespace CloudSoundMetroV2
 
         private void DownloadSongExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            //bload.Visibility = Visibility.Visible;
             Song s = (Song)SongDataGrid.SelectedItem;
             string path = s.S_Path;
             Task.Factory.StartNew(() =>
@@ -284,13 +267,10 @@ namespace CloudSoundMetroV2
             });
 
             e.Handled = true;
-
-
         }
 
         private void PlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-
             if (_loggedIn)
             {
                 e.CanExecute = true;
@@ -311,6 +291,15 @@ namespace CloudSoundMetroV2
                         CurrentSongIndex = SongDataGrid.SelectedIndex;
                         Song s = (Song)SongDataGrid.SelectedItem;
                         _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                        bool EventSet = false;
+                        while (!EventSet)
+                        {
+                            if (_localPlayer.GetWaveOut() != null)
+                            {
+                                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                                EventSet = true;
+                            }
+                        }
                     }
                     else
                     {
@@ -322,6 +311,15 @@ namespace CloudSoundMetroV2
                         CurrentSongIndex = SongDataGrid.SelectedIndex;
                         Song s = (Song)SongDataGrid.SelectedItem;
                         _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                        bool EventSet = false;
+                        while (!EventSet)
+                        {
+                            if (_localPlayer.GetWaveOut() != null)
+                            {
+                                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                                EventSet = true;
+                            }
+                        }
                     }
                 }
                 else
@@ -331,6 +329,64 @@ namespace CloudSoundMetroV2
                 }
             }
             e.Handled = true;
+        }
+
+        private void MainWindow_PlaybackStopped(object sender, NAudio.Wave.StoppedEventArgs e)
+        {
+            Console.WriteLine("DID THIS WORK?");
+            if (RepeatOne)
+            {
+                Dispatcher.BeginInvoke(new Action(delegate()
+                {
+                    _localPlayer.Stop();
+                    SongDataGrid.SelectedIndex = CurrentSongIndex;
+                    Song s = (Song)SongDataGrid.SelectedItem;
+                    
+                }));
+                _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+            }
+            else
+            {
+                if (CurrentSongIndex != SongDataGrid.Items.Count - 1)
+                {
+                    
+                    Dispatcher.BeginInvoke(new Action(delegate()
+                    {
+                        _localPlayer.Stop();
+                        SongDataGrid.SelectedIndex = (CurrentSongIndex == SongDataGrid.Items.Count - 1) ? 0 : ++SongDataGrid.SelectedIndex;
+                        CurrentSongIndex = SongDataGrid.SelectedIndex;
+                        Song s = (Song)SongDataGrid.SelectedItem;
+                        _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                    }));
+                }
+                else if (CurrentSongIndex == SongDataGrid.Items.Count - 1 && RepeatAll)
+                {
+                    Dispatcher.BeginInvoke(new Action(delegate()
+                    {
+                        _localPlayer.Stop();
+                        SongDataGrid.SelectedIndex = (CurrentSongIndex == SongDataGrid.Items.Count - 1) ? 0 : ++SongDataGrid.SelectedIndex;
+                        CurrentSongIndex = SongDataGrid.SelectedIndex;
+                        Song s = (Song)SongDataGrid.SelectedItem;
+                        _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                    }));
+                }
+                else
+                {
+                    Dispatcher.BeginInvoke(new Action(delegate()
+                    {
+                        _isPlaying = false;
+                        _localPlayer.Stop();
+                    }));
+                }
+            }
+            //if repeat one play again
+            //if not on last song play next
+            //else
+            //if on last song and repeat all play first
+            //else stop
         }
 
         private void StopCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -368,6 +424,15 @@ namespace CloudSoundMetroV2
                 CurrentSongIndex = SongDataGrid.SelectedIndex;
                 Song s = (Song)SongDataGrid.SelectedItem;
                 _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                bool EventSet = false;
+                while (!EventSet)
+                {
+                    if (_localPlayer.GetWaveOut() != null)
+                    {
+                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                        EventSet = true;
+                    }
+                }
             }
             e.Handled = true;
         }
@@ -391,15 +456,24 @@ namespace CloudSoundMetroV2
                 CurrentSongIndex = SongDataGrid.SelectedIndex;
                 Song s = (Song)SongDataGrid.SelectedItem;
                 _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                bool EventSet = false;
+                while (!EventSet)
+                {
+                    if (_localPlayer.GetWaveOut() != null)
+                    {
+                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                        EventSet = true;
+                    }
+                }
             }
             e.Handled = true;
         }
 
         //Add Playlist
-        private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
-        {
-            AddPlayistSection.Visibility = Visibility.Visible;
-        }
+        //private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
+        //{
+        //    AddPlayistSection.Visibility = Visibility.Visible;
+        //}
 
 
         //Remove Playlist
@@ -421,34 +495,34 @@ namespace CloudSoundMetroV2
 
         //Add new Playlist Methods
         //Open Window to create new Playlist
-        private void AddList_Click(object sender, RoutedEventArgs e)
-        {
-            _userId = MainWindow.UserId;
+        //private void AddList_Click(object sender, RoutedEventArgs e)
+        //{
+        //    _userId = MainWindow.UserId;
 
-            string NewPlaylistName = PlaylistNameBox.Text;
+        //    string NewPlaylistName = PlaylistNameBox.Text;
 
-            if (!string.IsNullOrWhiteSpace(NewPlaylistName))
-            {
-                Playlist NewPlaylist = new Playlist();
-                NewPlaylist.P_Name = NewPlaylistName;
-                _sqlAccess.AddPlaylist(NewPlaylist, _userId);
-                Dispatcher.BeginInvoke(new Action(delegate()
-                {
-                    _songList = _sqlAccess.GetSongsForUser(_userId);
-                    SongDataGrid.ItemsSource = _songList;
-                    _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
-                    PlaylistBox.ItemsSource = _playlistList;
-                }));
-                PlaylistNameBox.Text = "";
-                AddPlayistSection.Visibility = Visibility.Collapsed;
-            }
-        }
+        //    if (!string.IsNullOrWhiteSpace(NewPlaylistName))
+        //    {
+        //        Playlist NewPlaylist = new Playlist();
+        //        NewPlaylist.P_Name = NewPlaylistName;
+        //        _sqlAccess.AddPlaylist(NewPlaylist, _userId);
+        //        Dispatcher.BeginInvoke(new Action(delegate()
+        //        {
+        //            _songList = _sqlAccess.GetSongsForUser(_userId);
+        //            SongDataGrid.ItemsSource = _songList;
+        //            _playlistList = _sqlAccess.GetPlaylistsForUser(_userId);
+        //            PlaylistBox.ItemsSource = _playlistList;
+        //        }));
+        //        PlaylistNameBox.Text = "";
+        //        AddPlayistSection.Visibility = Visibility.Collapsed;
+        //    }
+        //}
 
-        private void CancelList_Click(object sender, RoutedEventArgs e)
-        {
-            PlaylistNameBox.Text = "";
-            AddPlayistSection.Visibility = Visibility.Collapsed;
-        }
+        //private void CancelList_Click(object sender, RoutedEventArgs e)
+        //{
+        //    PlaylistNameBox.Text = "";
+        //    AddPlayistSection.Visibility = Visibility.Collapsed;
+        //}
 
         //End Add new Playlist Methods
 
@@ -470,25 +544,153 @@ namespace CloudSoundMetroV2
         }
         //End Add Song to Playlist methods
 
-        //Begin Drag and Drop Stuff
-        //Not Fully Implemented
-        private void SongDataGridDrag(object sender, MouseButtonEventArgs e)
+        //Drag and Drop Stuff
+        public Point startPoint { get; set; }
+
+        private static T FindAnchestor<T>(DependencyObject current)
+            where T : DependencyObject
         {
-            Song s = (Song)SongDataGrid.SelectedItem;
-            //int id = s.S_Id;
-            //DataObject obj = new DataObject(id);
-            //DragDrop.DoDragDrop((DependencyObject)SongDataGrid.SelectedItem, obj, DragDropEffects.Copy);
-            DragDrop.DoDragDrop(SongDataGrid, s, DragDropEffects.Copy);
+            do
+            {
+                if (current is T)
+                {
+                    return (T)current;
+                }
+                current = VisualTreeHelper.GetParent(current);
+            }
+            while (current != null);
+            return null;
         }
 
-        private void SongDrop(object sender, DragEventArgs e)
+        private void SongDataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Song s = (Song)e.Data.GetData(typeof(Song));
-            //Playlist p = (Playlist)PlaylistBox.SelectedItem;
-            //Point p = Mouse.GetPosition(PlaylistBox);
-            //int index = PlaylistBox.
-            //_sqlAccess.AddSongToPlaylist(s.S_Id, p.P_Id);
+            startPoint = e.GetPosition(null);
+            if (e.ClickCount > 1) //must handle doubleclick here because this event eats the doubleclick event we put in the xaml
+            {
+                IsPlaying = true;
+                _localPlayer.Stop();
+                CurrentSongIndex = SongDataGrid.SelectedIndex;
+                Song s = (Song)SongDataGrid.SelectedItem;
+                _localPlayer.Play(s.S_Path + _blobAccess.GetSaS(), s.S_Length);
+                bool EventSet = false;
+                while (!EventSet)
+                {
+                    if (_localPlayer.GetWaveOut() != null)
+                    {
+                        _localPlayer.GetWaveOut().PlaybackStopped += MainWindow_PlaybackStopped;
+                        EventSet = true;
+                    }
+                }
+            }
+        }
+
+        private void SongDataGrid_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePos = e.GetPosition(null);
+            Vector diff = startPoint - mousePos;
+
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
+            {
+                DataGrid dGrid = sender as DataGrid;
+                List<Song> dragSongs = dGrid.SelectedItems.Cast<Song>().ToList<Song>();
+                DataObject songsObject = new DataObject("songs", dragSongs);
+
+                DragDrop.DoDragDrop(SongDataGrid, songsObject, DragDropEffects.Move);
+            } 
+        }
+
+        private void PlaylistBox_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent("songs") ||
+                sender == e.Source)
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void PlaylistBox_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("songs"))
+            {
+                using (var context = new CloudMp3Context())
+                {
+                    List<Song> draggedSongs = e.Data.GetData("songs") as List<Song>;
+                    string playlistName = ((Label)sender).Content.ToString();
+
+                    Playlist pl = context.Playlists.Where(x => x.P_Name == playlistName).FirstOrDefault();
+                    foreach (Song s in draggedSongs)
+                    {
+                        pl.Songs.Add(context.Songs.Where(x => x.S_Id == s.S_Id).FirstOrDefault());
+                    }
+                    context.SaveChanges();
+                }
+            }
         }
         //End Drag and Drop Stuff
+
+        private void Exit_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            e.Handled = true;
+        }
+
+        private void Exit_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void RepeatOne_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (_loggedIn)
+            {
+                e.CanExecute = true;
+            }
+            e.Handled = true;
+        }
+
+        private void RepeatOne_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            RepeatAll = false;
+            RepAll.IsChecked = false;
+            RepeatOne = !RepeatOne;
+            e.Handled = true;
+        }
+
+        private void RepeatAll_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (_loggedIn)
+            {
+                e.CanExecute = true;
+            }
+            e.Handled = true;
+        }
+
+        private void RepeatAll_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            RepeatOne = false;
+            RepOne.IsChecked = false;
+            RepeatAll = !RepeatAll;
+            e.Handled = true;
+        }
+
+        private void VolumeUp_Click(object sender, RoutedEventArgs e)
+        {
+            VolBar.Value += 5;
+        }
+
+        private void VolumeDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (VolBar.Value <= 5)
+            {
+                VolBar.Value = 0;
+            }
+            else
+            {
+                VolBar.Value -= 5;
+            }
+        }
+        
     }
 }

@@ -334,5 +334,17 @@ namespace CloudSoundMetroV2.Mp3Players
             ElapsedMiliseconds = (int)totalMiliseconds;
             SongProgress = (SongLength != 0) ? (int)(((double)ElapsedMiliseconds / (double)SongLength) * 1000) : 0;
         }
+
+        public IWavePlayer GetWaveOut()
+        {
+            if (waveOut != null)
+            {
+                return waveOut;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

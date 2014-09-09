@@ -79,5 +79,11 @@ namespace CloudSoundMetroV2.Mp3Players
             _waveOutDevice.Init(_mp3Reader);
             _waveOutDevice.Play();
         }
+
+
+        public IWavePlayer GetWaveOut()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

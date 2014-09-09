@@ -41,6 +41,15 @@
         <CommandBinding Command="{x:Static comm:Commands.Prev}"
                         CanExecute="PrevCanExecute"
                         Executed="PrevExecuted"/>
+        <CommandBinding Command="{x:Static comm:Commands.Exit}"
+                        CanExecute="Exit_CanExecute"
+                        Executed="Exit_Executed"/>
+        <CommandBinding Command="{x:Static comm:Commands.RepeatOne}"
+                        CanExecute="RepeatOne_CanExecute"
+                        Executed="RepeatOne_Executed"/>
+        <CommandBinding Command="{x:Static comm:Commands.RepeatAll}"
+                        CanExecute="RepeatAll_CanExecute"
+                        Executed="RepeatAll_Executed"/>
     </Window.CommandBindings>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -57,15 +66,21 @@
                           Command="{x:Static comm:Commands.Login}"/>
                 <MenuItem Header="Log Out"
                           Command="{x:Static comm:Commands.Logout}"/>
-                <MenuItem Header="Exit" x:Name="FileExitItem"/>
+                <MenuItem Header="Exit" Command="{x:Static comm:Commands.Exit}"/>
             </MenuItem>
             <MenuItem Header="Songs">
-                <MenuItem Header="Upload Songs"/>
-                <MenuItem Header="Download Songs"/>
+                <MenuItem Header="Upload Songs"
+                          Command="{x:Static comm:Commands.UploadSong}"/>
+                <MenuItem Header="Download Songs"
+                          Command="{x:Static comm:Commands.DownloadSong}"/>
             </MenuItem>
             <MenuItem Header="Playlists">
                 <MenuItem Header="Add Playlist"/>
                 <MenuItem Header="Remove Playlist"/>
+            </MenuItem>
+            <MenuItem Header="Repeat">
+                <MenuItem Header="Repeat One" IsCheckable="True" x:Name="RepOne" Command="{x:Static comm:Commands.RepeatOne}"/>
+                <MenuItem Header="Repeat All" IsCheckable="True" x:Name="RepAll" Command="{x:Static comm:Commands.RepeatAll}"/>
             </MenuItem>
         </Menu>
         <StackPanel x:Name="PlayerGrid" Grid.Column="1"
@@ -79,12 +94,12 @@
             <Button x:Name="NextButton" BorderThickness="0" Content="{StaticResource NextImg}"
                     Height="35" Width="35" Command="{x:Static comm:Commands.Next}"/>
             <Button x:Name="VolumeDown" BorderThickness="0" Content="{StaticResource LowVolume}"
-                    Height="35" Width="35"/>
-            <Slider Width="100" Minimum="0" Maximum="100"
+                    Height="35" Width="35" Click="VolumeDown_Click"/>
+            <Slider Width="100" Minimum="0" Maximum="100" x:Name="VolBar"
                     TickFrequency="1" VerticalAlignment="Center"
                     IsSnapToTickEnabled="True" Value="{Binding Path=Volume, Converter={StaticResource VolConverter}}"/>
             <Button x:Name="VolumeUp" BorderThickness="0" Content="{StaticResource HighVolume}"
-                    Height="35" Width="35"/>
+                    Height="35" Width="35" Click="VolumeUp_Click"/>
             <Label x:Name="CurrentTime"
                                Content="{Binding Path=ElapsedMiliseconds, Converter={StaticResource TimerConverter}}"
                                Width="45"
@@ -112,50 +127,56 @@
                 </GridView>
             </ListView.View>
         </ListView>-->
-        <DataGrid x:Name="SongDataGrid" Grid.Column="1" Grid.Row="1"
+        <ScrollViewer Grid.Column="1" Grid.Row="1">
+            <DataGrid x:Name="SongDataGrid" SelectionMode="Extended"
                   IsReadOnly="True" AutoGenerateColumns="False" Margin="0,10,0,0"
-                  VerticalGridLinesBrush="Transparent" MouseLeftButtonDown="SongDataGridDrag">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"/>
-                <DataGridTextColumn Header="Title" Binding="{Binding S_Title}"/>
-                <DataGridTextColumn Header="Length" 
+                  VerticalGridLinesBrush="Transparent"
+                  PreviewMouseLeftButtonDown="SongDataGrid_PreviewMouseLeftButtonDown"
+                  PreviewMouseMove="SongDataGrid_PreviewMouseMove">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"/>
+                    <DataGridTextColumn Header="Title" Binding="{Binding S_Title}"/>
+                    <DataGridTextColumn Header="Length" 
                                     Binding="{Binding S_Length, Converter={StaticResource MilisToSec}}">
-                    <DataGridTextColumn.CellStyle>
-                        <Style
+                        <DataGridTextColumn.CellStyle>
+                            <Style
                             TargetType="{x:Type DataGridCell}" 
                             BasedOn="{StaticResource {x:Type DataGridCell}}">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type DataGridCell}">
-                                        <Grid Background="Transparent">
-                                            <ContentPresenter HorizontalAlignment="Center" />
-                                        </Grid>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGridTextColumn.CellStyle>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter HorizontalAlignment="Center" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+        
         <StackPanel Grid.Row="2">
             <Button Content="Song Library" Click="Collection_Click" Margin="0,9,0,0" BorderThickness="0"/>
             <!--<Button Content="Add Playlist" Click="AddPlaylistPopup_Click"/>-->
             <ListBox x:Name="PlaylistBox" ItemsSource="{Binding Path=userPlaylists}"
-                     SelectionChanged="PlaylistBox_SelectionChanged" AllowDrop="True" Drop="SongDrop">
+                     SelectionChanged="PlaylistBox_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Label Content="{Binding Path=P_Name}"/>
+                        <Label Content="{Binding Path=P_Name}"
+                               AllowDrop="True" Drop="PlaylistBox_Drop" DragEnter="PlaylistBox_DragEnter"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Add Playlist" Click="ShowAddPlaylist_Click"/>
-                        <MenuItem Header="Remove Playlist" Click="RemovePlaylist_Click"/>
+                        <!--<MenuItem Header="Add Playlist" Click="ShowAddPlaylist_Click"/>
+                        <MenuItem Header="Remove Playlist" Click="RemovePlaylist_Click"/>-->
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
-            <Border x:Name="AddPlayistSection" BorderBrush="DimGray"  BorderThickness=".55" Visibility="Collapsed">
+            <!--<Border x:Name="AddPlayistSection" BorderBrush="DimGray"  BorderThickness=".55" Visibility="Collapsed">
                 <StackPanel>
                     <Label></Label>
                     <Grid>
@@ -177,7 +198,7 @@
                     </Grid>
                     <Label/>
                 </StackPanel>
-            </Border>
+            </Border>-->
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>
