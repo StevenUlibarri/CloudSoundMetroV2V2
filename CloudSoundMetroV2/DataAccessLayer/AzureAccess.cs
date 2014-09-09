@@ -116,7 +116,7 @@ namespace CloudSoundMetroV2.DataAccessLayer
         public void DownloadSong(string filePath)
         {
             CloudBlockBlob blockBlob = _container.GetBlockBlobReference(filePath);
-            string writePath = String.Format("{0}/{1}", localMp3Directory, filePath);
+            string writePath = String.Format("{0}/{1}", localMp3Directory, filePath + ".mp3");
             isCompleted = false;
             using (var fileStream = System.IO.File.OpenWrite(writePath))
             {
