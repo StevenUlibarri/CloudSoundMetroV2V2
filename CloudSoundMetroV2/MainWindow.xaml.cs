@@ -83,7 +83,7 @@ namespace CloudSoundMetroV2
                 PlayerGrid.DataContext = _localPlayer;
                 CurrentSongIndex = -1;
 
-                this.Loaded += new RoutedEventHandler(LoginPrompt);   
+                //this.Loaded += new RoutedEventHandler(LoginPrompt);   
             }
             catch (Exception e)
             {
