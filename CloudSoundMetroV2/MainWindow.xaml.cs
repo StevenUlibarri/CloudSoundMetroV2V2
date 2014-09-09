@@ -238,10 +238,12 @@ namespace CloudSoundMetroV2
             chooseFile.ShowDialog();
             string[] files = chooseFile.FileNames;
 
+            rng.Visibility = Visibility.Visible;
+            rng.IsActive = true;
+            hid.Visibility = Visibility.Visible;
             if (files.Length != 0)
             {
-                rng.Visibility = Visibility.Visible;
-                rng.IsActive = true;
+                
                 Task.Factory.StartNew(() =>
                 {
                     foreach (string f in files)
@@ -255,6 +257,7 @@ namespace CloudSoundMetroV2
                                 SongDataGrid.ItemsSource = _songList;
                             }
                             rng.IsActive = false;
+                            hid.Visibility = Visibility.Collapsed;
                             rng.Visibility = Visibility.Collapsed;
                         }));
                     }
@@ -278,10 +281,12 @@ namespace CloudSoundMetroV2
             string path = s.S_Path;
             rng.Visibility = Visibility.Visible;
             rng.IsActive = true;
+            hid.Visibility = Visibility.Visible;
             Task.Factory.StartNew(() =>
             {
                 _blobAccess.DownloadSong(Path.GetFileName(path));
                 rng.IsActive = false;
+                hid.Visibility = Visibility.Collapsed;
                 rng.Visibility = Visibility.Collapsed;
             });
             e.Handled = true;
@@ -632,6 +637,11 @@ namespace CloudSoundMetroV2
             {
                 VolBar.Value -= 5;
             }
+        }
+
+        private void hid_Click(object sender, RoutedEventArgs e)
+        {
+            progPanel.Visibility = Visibility.Collapsed;
         }
         
     }
