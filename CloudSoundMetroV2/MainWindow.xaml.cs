@@ -83,7 +83,14 @@ namespace CloudSoundMetroV2
                 PlayerGrid.DataContext = _localPlayer;
                 CurrentSongIndex = -1;
 
-                //this.Loaded += new RoutedEventHandler(LoginPrompt);   
+                this.Loaded += new RoutedEventHandler(LoginPrompt);
+                this.Loaded += delegate
+                {
+                    this.FileExitItem.Click += (s, e) =>
+                    {
+                        this.Close();
+                    };
+                };
             }
             catch (Exception e)
             {
@@ -161,7 +168,7 @@ namespace CloudSoundMetroV2
         private void LoginCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (!_loggedIn)
-            {
+                {
                 e.CanExecute = true;
             }
             e.Handled = true;
@@ -181,7 +188,7 @@ namespace CloudSoundMetroV2
                 {
                     _userId = _sqlAccess.GetUserID(log.UserName);
                     LoggedIn = true;
-                    Content = "You are logged in as " + log.UserName;
+                    //Content = "You are logged in as " + log.UserName;
                 }
                 else
                 {
@@ -200,7 +207,7 @@ namespace CloudSoundMetroV2
             {
                 e.CanExecute = true;
             }
-            e.Handled = true;
+                e.Handled = true;
         }
 
         private void LogoutExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -210,7 +217,9 @@ namespace CloudSoundMetroV2
             SongDataGrid.ItemsSource = null;
             LoggedIn = false;
             e.Handled = true;
-            //NotificationsLabel.Content = "You have logged out. Good Bye";
+            // This is obviously sleepy code....
+            //Content = "You have logged out. Good Bye";
+
         }
 
         private void UploadSongCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -292,7 +301,7 @@ namespace CloudSoundMetroV2
         private void PlayExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             if (!SongDataGrid.Items.IsEmpty)
-            {
+            {   
                 if (!IsPlaying)
                 {
                     if (SongDataGrid.SelectedIndex == -1)
