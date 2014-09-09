@@ -53,9 +53,11 @@
         </Grid.RowDefinitions>
         <Menu>
             <MenuItem Header="File">
-                <MenuItem Header="Log In"/>
-                <MenuItem Header="Log Out"/>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="Log In"
+                          Command="{x:Static comm:Commands.Login}"/>
+                <MenuItem Header="Log Out"
+                          Command="{x:Static comm:Commands.Logout}"/>
+                <MenuItem Header="Exit" x:Name="FileExitItem"/>
             </MenuItem>
             <MenuItem Header="Songs">
                 <MenuItem Header="Upload Songs"/>
@@ -103,7 +105,7 @@
                   IsReadOnly="True" AutoGenerateColumns="False"
                   VerticalGridLinesBrush="Transparent" Margin="0,10,0,0">
             <DataGrid.Resources>
-                
+
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Artist" Binding="{Binding S_Artist}"
