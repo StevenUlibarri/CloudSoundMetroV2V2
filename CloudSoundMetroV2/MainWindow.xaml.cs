@@ -19,6 +19,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
 using CloudSoundMetroV2.Windows;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace CloudSoundMetroV2
 {
