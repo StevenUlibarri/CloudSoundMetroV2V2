@@ -173,7 +173,7 @@ namespace CloudSoundMetroV2
                 { 
                     ColorScheme = this.MetroDialogOptions.ColorScheme,
                     NegativeButtonVisibility=System.Windows.Visibility.Visible,
-                    NegativeButtonText="Cancel",
+                    NegativeButtonText="Cancel"
                 });
             if (result == null)
             {
@@ -443,7 +443,10 @@ namespace CloudSoundMetroV2
         //Add Playlist
         private void ShowAddPlaylist_Click(object sender, RoutedEventArgs e)
         {
-            AddPlayistSection.Visibility = Visibility.Visible;
+            if (LoggedIn)
+            {
+                AddPlayistSection.Visibility = Visibility.Visible;
+            }
         }
 
 
