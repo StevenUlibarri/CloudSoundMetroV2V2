@@ -54,7 +54,7 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="590"/>
         </Grid.RowDefinitions>
-        <Menu x:Name="menuItems">
+        <Menu Visibility="Collapsed" x:Name="menuItems">
             <MenuItem Header="File">
                 <MenuItem Header="Log In"
                           Command="{x:Static comm:Commands.Login}"/>
@@ -69,7 +69,7 @@
                           Command="{x:Static comm:Commands.DownloadSong}"/>
             </MenuItem>
         </Menu>
-        <StackPanel x:Name="PlayerGrid" Grid.Column="1"
+        <StackPanel Visibility="Collapsed" x:Name="PlayerGrid" Grid.Column="1"
                     Orientation="Horizontal" HorizontalAlignment="Center">
             <Button x:Name="PlayButton" BorderThickness="0" Content="{StaticResource PlayImg}"
                     Height="35" Width="35" Command="{x:Static comm:Commands.Play}"/>
@@ -113,7 +113,7 @@
                 </GridView>
             </ListView.View>
         </ListView>-->
-        <ScrollViewer Grid.Column="1" Grid.Row="1" x:Name="ScrollView">
+        <ScrollViewer Grid.Column="1" Grid.Row="1" Visibility="Collapsed" x:Name="ScrollView">
             <DataGrid x:Name="SongDataGrid" SelectionMode="Extended"
                   IsReadOnly="True" AutoGenerateColumns="False" Margin="0,10,0,0"
                   VerticalGridLinesBrush="Transparent"
@@ -128,7 +128,6 @@
                             <Style
                             TargetType="{x:Type DataGridCell}" 
                             BasedOn="{StaticResource {x:Type DataGridCell}}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type DataGridCell}">
@@ -144,14 +143,14 @@
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>
-        
-        <StackPanel Grid.Row="2" x:Name="playlistSP">
+
+        <StackPanel Grid.Row="2" Visibility="Collapsed" x:Name="playlistSP">
             <StackPanel x:Name="progPanel">
                 <Controls:ProgressRing x:Name="rng" IsActive="False" Visibility="Collapsed"/>
                 <Button x:Name="hid" Content="Hide" Width="90" Click="hid_Click" Visibility="Collapsed"/>
             </StackPanel>
-            <Button x:Name="SL" Content="Song Library" Click="Collection_Click" Margin="0,9,0,0" BorderThickness="0"/>
-            <Button x:Name="AP" Content="Add Playlist" Click="ShowAddPlaylist_Click" BorderThickness="0"/>
+            <Button Visibility="Collapsed" x:Name="SL" Content="Song Library" Click="Collection_Click" Margin="0,9,0,0" BorderThickness="0"/>
+            <Button Visibility="Collapsed" x:Name="AP" Content="Add Playlist" Click="ShowAddPlaylist_Click" BorderThickness="0"/>
             <Border x:Name="AddPlayistSection" BorderBrush="DimGray"  BorderThickness=".55" Visibility="Collapsed">
                 <StackPanel>
                     <Label></Label>
@@ -190,9 +189,8 @@
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
-            
         </StackPanel>
-        <!--<Grid Visibility="Visible" x:Name="LoginBox" Grid.Column="2" Grid.Row="2" Margin="0,200,0,0">
+        <Grid Visibility="Visible" x:Name="LoginBox" Grid.Column="2" Grid.Row="2" Margin="0,200,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*"/>
                 <ColumnDefinition Width="50*"/>
@@ -246,9 +244,8 @@
                 </UniformGrid>
             </StackPanel>
         </Grid>
-            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="Passwords Dont Match" Visibility="Collapsed"  x:Name="CPasswordInvalid"/>
-            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName or Password is invaild" Visibility="Collapsed"  x:Name="CUPInvalid"/>
-            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName and Password cant be blank" Visibility="Collapsed"  x:Name="SCUPInvalid"/>
-        </Grid> -->
+        <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="Passwords Dont Match" Visibility="Collapsed"  x:Name="CPasswordInvalid"/>
+        <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName or Password is invaild" Visibility="Collapsed"  x:Name="CUPInvalid"/>
+        <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName and Password cant be blank" Visibility="Collapsed"  x:Name="SCUPInvalid"/>
     </Grid>
 </Controls:MetroWindow>
