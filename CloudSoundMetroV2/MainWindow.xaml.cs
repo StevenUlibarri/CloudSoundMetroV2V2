@@ -92,8 +92,6 @@ namespace CloudSoundMetroV2
                 CurrentSongIndex = -1;
 
                 this.Loaded += new RoutedEventHandler(LoginPrompt);
-                //MahApps.Metro.Controls.Dialogs.DialogManager.ShowLoginAsync(this, "Test", "Test");
-               // MahApps.Metro.Controls.Dialogs.DialogManager.ShowInputAsync(this, "Test", "Test");
             }
             catch (Exception e)
             {
@@ -680,7 +678,6 @@ namespace CloudSoundMetroV2
             //catch (StackOverflowException)
             //{
 
-
             //}
         }
 
@@ -704,8 +701,6 @@ namespace CloudSoundMetroV2
             //ValidateUserName(this.CUserNameBox.Text, this.CPasswordBox.Password);
             //try
             //{
-               
-
             //        UserName = CUserNameBox.Text;
             //        Password = CPasswordBox.Password;
             //        if (Password != CPasswordBoxConfrim.Password)
@@ -732,8 +727,6 @@ namespace CloudSoundMetroV2
             //            ScrollView.Visibility = Visibility.Visible;
             //            playlistSP.Visibility = Visibility.Visible;
             //        }
-                
-             
             //}
             //catch (StackOverflowException)
             //{
