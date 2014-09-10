@@ -82,7 +82,6 @@ namespace CloudSoundMetroV2
                 Password = null;
                 Setup();
                 LoggedIn = false;
-                _userId = 1;
                 IsPlaying = false;
                 _blobAccess = new AzureAccess();
                 _localPlayer = new StreamMp3Player();
@@ -721,7 +720,7 @@ namespace CloudSoundMetroV2
                     UserName = CUserNameBox.Text;
                     Password = CPasswordBox.Password;
                     if (Password != CPasswordBoxConfrim.Password)
-                    {
+                    {   
                         CPasswordInvalid.Visibility = Visibility.Visible;
                         UserName = null;
                         Password = null;

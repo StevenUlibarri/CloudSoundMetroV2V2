@@ -204,7 +204,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <Grid Visibility="Visible" x:Name="LoginBox" Grid.Column="2" Grid.Row="2">
+        <Grid Visibility="Visible" x:Name="LoginBox" Grid.Column="2" Grid.Row="2" Margin="0,200,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*"/>
                 <ColumnDefinition Width="50*"/>
@@ -232,7 +232,7 @@
             </StackPanel>
             <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="Passwords Dont Match" Visibility="Hidden"  x:Name="PasswordInvalid"/>
         </Grid>
-        <Grid Visibility="Collapsed" x:Name="createACC" Grid.Column="2" Grid.Row="2">
+        <Grid Visibility="Collapsed" x:Name="createACC" Grid.Column="2" Grid.Row="2" Margin="0,200,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50*"/>
                 <ColumnDefinition Width="50*"/>
@@ -257,7 +257,9 @@
                     <Button x:Name="CCreateAcc" Content="Create"  Click="CreateAcc_Click"/>
                 </UniformGrid>
             </StackPanel>
-            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="Passwords Dont Match" Visibility="Hidden"  x:Name="CPasswordInvalid"/>
+            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="Passwords Dont Match" Visibility="Collapsed"  x:Name="CPasswordInvalid"/>
+            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName or Password is invaild" Visibility="Collapsed"  x:Name="CUPInvalid"/>
+            <Label Grid.Column="1" Grid.Row="4" Foreground="Red" FontSize="12" Content="UserName and Password cant be blank" Visibility="Collapsed"  x:Name="SCUPInvalid"/>
         </Grid>
 
     </Grid>
