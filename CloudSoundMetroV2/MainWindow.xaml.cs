@@ -20,6 +20,7 @@ using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
 using CloudSoundMetroV2.Windows;
 using MahApps.Metro.Controls.Dialogs;
+using System.Threading;
 
 namespace CloudSoundMetroV2
 {
@@ -305,6 +306,9 @@ namespace CloudSoundMetroV2
             });
             
             e.Handled = true;
+            Thread.Sleep(1000);
+            rng.Visibility = Visibility.Collapsed;
+            hid.Visibility = Visibility.Collapsed;
         }
 
         private void PlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
