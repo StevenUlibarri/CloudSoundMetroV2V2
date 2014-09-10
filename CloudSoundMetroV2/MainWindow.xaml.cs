@@ -17,7 +17,6 @@ using System.Collections.ObjectModel;
 using CloudSoundMetroV2.DataAccessLayer;
 using System.IO;
 using Microsoft.Win32;
-using Cloudmp3.Windows;
 using System.Windows.Controls.Primitives;
 using CloudSoundMetroV2.Windows;
 
@@ -28,6 +27,8 @@ namespace CloudSoundMetroV2
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        public string UserName { get; private set; }
+        public string Password { get; private set; }
         private IMp3Player _localPlayer;
         private ObservableCollection<Song> _songList;
         private ObservableCollection<Playlist> _playlistList;
@@ -77,6 +78,8 @@ namespace CloudSoundMetroV2
             try
             {
                 InitializeComponent();
+                UserName = null;
+                Password = null;
                 Setup();
                 LoggedIn = false;
                 _userId = 1;
@@ -87,7 +90,7 @@ namespace CloudSoundMetroV2
                 PlayerGrid.DataContext = _localPlayer;
                 CurrentSongIndex = -1;
 
-                this.Loaded += new RoutedEventHandler(LoginPrompt);
+                //this.Loaded += new RoutedEventHandler(LoginPrompt);
             }
             catch (Exception e)
             {
@@ -165,28 +168,19 @@ namespace CloudSoundMetroV2
 
         private void LoginExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            Login log = new Login();
-            log.Top = this.Top + 50;
-            log.Left = this.Left + 50;
-            log.ShowDialog();
-            log.Focus();
+            menuItems.Visibility = Visibility.Collapsed;
+            PlayerGrid.Visibility = Visibility.Collapsed;
+            SL.Visibility = Visibility.Collapsed;
+            AP.Visibility = Visibility.Collapsed;
+            ScrollView.Visibility = Visibility.Collapsed;
+            playlistSP.Visibility = Visibility.Collapsed;
+            UserNameBox.Text = "";
+            PasswordBox.Password = "";
+            PasswordBoxConfrim.Password = "";
+            LoginBox.Visibility = Visibility.Visible;
+            
 
-            if (log.UserName != null)
-            {
-                if (_sqlAccess.ValidateUserName(log.UserName, log.Password))
-                {
-                    _userId = _sqlAccess.GetUserID(log.UserName);
-                    LoggedIn = true;
-                }
-                else
-                {
-                    MessageBox.Show("Incorrect Username or Password.");
-                }
-            }
-            if (e != null)
-            {
-                e.Handled = true;
-            }
+          
         }
 
         private void LogoutCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -644,6 +638,138 @@ namespace CloudSoundMetroV2
         {
             rng.Visibility = Visibility.Collapsed;
             hid.Visibility = Visibility.Collapsed;
+        }
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password) && !string.IsNullOrEmpty(PasswordBoxConfrim.Password))
+                {
+
+                    UserName = UserNameBox.Text;
+                    Password = PasswordBox.Password;
+                    if (UserName != null)
+                    {
+                        if (_sqlAccess.ValidateUserName(UserName, Password))
+                        {
+                            _userId = _sqlAccess.GetUserID(UserName);
+                            LoggedIn = true;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Incorrect Username or Password.");
+                        }
+                    }
+                    if (e != null)
+                    {
+                        e.Handled = true;
+                    }
+                    if (Password != PasswordBoxConfrim.Password)
+                    {
+                        PasswordInvalid.Visibility = Visibility.Visible;
+                        UserName = null;
+                        Password = null;
+                        PasswordBox.Password = "";
+                        PasswordBoxConfrim.Password = "";
+
+                    }
+                    else
+                    {
+                        LoginBox.Visibility = Visibility.Collapsed;
+                        menuItems.Visibility = Visibility.Visible;
+                        PlayerGrid.Visibility = Visibility.Visible;
+                        SL.Visibility = Visibility.Visible;
+                        AP.Visibility = Visibility.Visible;
+                        ScrollView.Visibility = Visibility.Visible;
+                        playlistSP.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("User Name and Password must not be blank.");
+                }
+            }
+            catch (StackOverflowException)
+            {
+
+
+            }
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+
+
+        private void CreateAccBox_Click(object sender, RoutedEventArgs e)
+        {
+            LoginBox.Visibility = Visibility.Collapsed;
+            CUserNameBox.Text = "";
+            CPasswordBox.Password = "";
+            CPasswordBoxConfrim.Password = "";
+            createACC.Visibility = Visibility.Visible;
+        }
+        private void CreateAcc_Click(object sender, RoutedEventArgs e)
+        {
+            ValidateUserName(this.CUserNameBox.Text, this.CPasswordBox.Password);
+            try
+            {
+               
+
+                    UserName = CUserNameBox.Text;
+                    Password = CPasswordBox.Password;
+                    if (Password != CPasswordBoxConfrim.Password)
+                    {
+                        CPasswordInvalid.Visibility = Visibility.Visible;
+                        UserName = null;
+                        Password = null;
+                        CPasswordBox.Password = "";
+                        CPasswordBoxConfrim.Password = "";
+
+                    }
+                    else
+                    {
+                        if (_sqlAccess.ValidateUserName(UserName, Password))
+                        {
+                            _userId = _sqlAccess.GetUserID(UserName);
+                            LoggedIn = true;
+                        }
+                        createACC.Visibility = Visibility.Collapsed;
+                        menuItems.Visibility = Visibility.Visible;
+                        PlayerGrid.Visibility = Visibility.Visible;
+                        SL.Visibility = Visibility.Visible;
+                        AP.Visibility = Visibility.Visible;
+                        ScrollView.Visibility = Visibility.Visible;
+                        playlistSP.Visibility = Visibility.Visible;
+                    }
+                
+             
+            }
+            catch (StackOverflowException)
+            {
+
+
+            }
+        }
+        public void ValidateUserName(string usrName, string pass)
+        {
+            using (var context = new CloudMp3Context())
+            {
+                var query = (from u in context.Users
+                             where u.U_UserName == usrName
+                             select u).SingleOrDefault();
+                if (query == null)
+                {
+                    User u = new User();
+                    u.U_UserName = usrName;
+                    u.U_Password = pass;
+                    context.Users.Add(u);
+                    context.SaveChanges();
+
+                }
+            }
         }
         
     }
