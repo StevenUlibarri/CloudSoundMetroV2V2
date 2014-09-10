@@ -19,6 +19,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Controls.Primitives;
 using CloudSoundMetroV2.Windows;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace CloudSoundMetroV2
 {
@@ -78,11 +79,11 @@ namespace CloudSoundMetroV2
             try
             {
                 InitializeComponent();
+                
                 UserName = null;
                 Password = null;
                 Setup();
                 LoggedIn = false;
-                _userId = 1;
                 IsPlaying = false;
                 _blobAccess = new AzureAccess();
                 _localPlayer = new StreamMp3Player();
@@ -90,7 +91,9 @@ namespace CloudSoundMetroV2
                 PlayerGrid.DataContext = _localPlayer;
                 CurrentSongIndex = -1;
 
-                //this.Loaded += new RoutedEventHandler(LoginPrompt);
+                this.Loaded += new RoutedEventHandler(LoginPrompt);
+                //MahApps.Metro.Controls.Dialogs.DialogManager.ShowLoginAsync(this, "Test", "Test");
+               // MahApps.Metro.Controls.Dialogs.DialogManager.ShowInputAsync(this, "Test", "Test");
             }
             catch (Exception e)
             {
@@ -102,7 +105,6 @@ namespace CloudSoundMetroV2
         private void LoginPrompt(object sender, RoutedEventArgs e)
         {
             LoginExecuted(null, null);
-
         }
 
         private void PromptLogin(object sender, RoutedEventArgs e)
@@ -166,21 +168,41 @@ namespace CloudSoundMetroV2
             e.Handled = true;
         }
 
-        private void LoginExecuted(object sender, ExecutedRoutedEventArgs e)
+        private async void LoginExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            menuItems.Visibility = Visibility.Collapsed;
-            PlayerGrid.Visibility = Visibility.Collapsed;
-            SL.Visibility = Visibility.Collapsed;
-            AP.Visibility = Visibility.Collapsed;
-            ScrollView.Visibility = Visibility.Collapsed;
-            playlistSP.Visibility = Visibility.Collapsed;
-            UserNameBox.Text = "";
-            PasswordBox.Password = "";
-            PasswordBoxConfrim.Password = "";
-            LoginBox.Visibility = Visibility.Visible;
-            
-
-          
+            LoginDialogData result = await this.ShowLoginAsync("CloudSound", "Enter your credentials",
+                new LoginDialogSettings
+                { 
+                    ColorScheme = this.MetroDialogOptions.ColorScheme,
+                    NegativeButtonVisibility=System.Windows.Visibility.Visible,
+                    NegativeButtonText="Cancel",
+                });
+            if (result == null)
+            {
+                
+            }
+            else
+            {
+                if (_sqlAccess.ValidateUserName(result.Username, result.Password))
+                {
+                    _userId = _sqlAccess.GetUserID(result.Username);
+                    LoggedIn = true;
+                }
+                else
+                {
+                    MessageDialogResult messageResult = await this.ShowMessageAsync("Login Failed", "Incorrect Username or Password");
+                }
+            }
+            //menuItems.Visibility = Visibility.Collapsed;
+            //PlayerGrid.Visibility = Visibility.Collapsed;
+            //SL.Visibility = Visibility.Collapsed;
+            //AP.Visibility = Visibility.Collapsed;
+            //ScrollView.Visibility = Visibility.Collapsed;
+            //playlistSP.Visibility = Visibility.Collapsed;
+            //UserNameBox.Text = "";
+            //PasswordBox.Password = "";
+            //PasswordBoxConfrim.Password = "";
+            //LoginBox.Visibility = Visibility.Visible;
         }
 
         private void LogoutCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -583,40 +605,6 @@ namespace CloudSoundMetroV2
             this.Close();
         }
 
-        private void RepeatOne_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (_loggedIn)
-            {
-                e.CanExecute = true;
-            }
-            e.Handled = true;
-        }
-
-        private void RepeatOne_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            RepeatAll = false;
-            RepAll.IsChecked = false;
-            RepeatOne = !RepeatOne;
-            e.Handled = true;
-        }
-
-        private void RepeatAll_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (_loggedIn)
-            {
-                e.CanExecute = true;
-            }
-            e.Handled = true;
-        }
-
-        private void RepeatAll_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            RepeatOne = false;
-            RepOne.IsChecked = false;
-            RepeatAll = !RepeatAll;
-            e.Handled = true;
-        }
-
         private void VolumeUp_Click(object sender, RoutedEventArgs e)
         {
             VolBar.Value += 5;
@@ -641,59 +629,59 @@ namespace CloudSoundMetroV2
         }
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password) && !string.IsNullOrEmpty(PasswordBoxConfrim.Password))
-                {
+            //try
+            //{
+            //    if (!string.IsNullOrEmpty(UserNameBox.Text) && !string.IsNullOrEmpty(PasswordBox.Password) && !string.IsNullOrEmpty(PasswordBoxConfrim.Password))
+            //    {
 
-                    UserName = UserNameBox.Text;
-                    Password = PasswordBox.Password;
-                    if (UserName != null)
-                    {
-                        if (_sqlAccess.ValidateUserName(UserName, Password))
-                        {
-                            _userId = _sqlAccess.GetUserID(UserName);
-                            LoggedIn = true;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Incorrect Username or Password.");
-                        }
-                    }
-                    if (e != null)
-                    {
-                        e.Handled = true;
-                    }
-                    if (Password != PasswordBoxConfrim.Password)
-                    {
-                        PasswordInvalid.Visibility = Visibility.Visible;
-                        UserName = null;
-                        Password = null;
-                        PasswordBox.Password = "";
-                        PasswordBoxConfrim.Password = "";
+            //        UserName = UserNameBox.Text;
+            //        Password = PasswordBox.Password;
+            //        if (UserName != null)
+            //        {
+            //            if (_sqlAccess.ValidateUserName(UserName, Password))
+            //            {
+            //                _userId = _sqlAccess.GetUserID(UserName);
+            //                LoggedIn = true;
+            //            }
+            //            else
+            //            {
+            //                MessageBox.Show("Incorrect Username or Password.");
+            //            }
+            //        }
+            //        if (e != null)
+            //        {
+            //            e.Handled = true;
+            //        }
+            //        if (Password != PasswordBoxConfrim.Password)
+            //        {
+            //            PasswordInvalid.Visibility = Visibility.Visible;
+            //            UserName = null;
+            //            Password = null;
+            //            PasswordBox.Password = "";
+            //            PasswordBoxConfrim.Password = "";
 
-                    }
-                    else
-                    {
-                        LoginBox.Visibility = Visibility.Collapsed;
-                        menuItems.Visibility = Visibility.Visible;
-                        PlayerGrid.Visibility = Visibility.Visible;
-                        SL.Visibility = Visibility.Visible;
-                        AP.Visibility = Visibility.Visible;
-                        ScrollView.Visibility = Visibility.Visible;
-                        playlistSP.Visibility = Visibility.Visible;
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("User Name and Password must not be blank.");
-                }
-            }
-            catch (StackOverflowException)
-            {
+            //        }
+            //        else
+            //        {
+            //            LoginBox.Visibility = Visibility.Collapsed;
+            //            menuItems.Visibility = Visibility.Visible;
+            //            PlayerGrid.Visibility = Visibility.Visible;
+            //            SL.Visibility = Visibility.Visible;
+            //            AP.Visibility = Visibility.Visible;
+            //            ScrollView.Visibility = Visibility.Visible;
+            //            playlistSP.Visibility = Visibility.Visible;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("User Name and Password must not be blank.");
+            //    }
+            //}
+            //catch (StackOverflowException)
+            //{
 
 
-            }
+            //}
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -705,53 +693,53 @@ namespace CloudSoundMetroV2
 
         private void CreateAccBox_Click(object sender, RoutedEventArgs e)
         {
-            LoginBox.Visibility = Visibility.Collapsed;
-            CUserNameBox.Text = "";
-            CPasswordBox.Password = "";
-            CPasswordBoxConfrim.Password = "";
-            createACC.Visibility = Visibility.Visible;
+            //LoginBox.Visibility = Visibility.Collapsed;
+            //CUserNameBox.Text = "";
+            //CPasswordBox.Password = "";
+            //CPasswordBoxConfrim.Password = "";
+            //createACC.Visibility = Visibility.Visible;
         }
         private void CreateAcc_Click(object sender, RoutedEventArgs e)
         {
-            ValidateUserName(this.CUserNameBox.Text, this.CPasswordBox.Password);
-            try
-            {
+            //ValidateUserName(this.CUserNameBox.Text, this.CPasswordBox.Password);
+            //try
+            //{
                
 
-                    UserName = CUserNameBox.Text;
-                    Password = CPasswordBox.Password;
-                    if (Password != CPasswordBoxConfrim.Password)
-                    {
-                        CPasswordInvalid.Visibility = Visibility.Visible;
-                        UserName = null;
-                        Password = null;
-                        CPasswordBox.Password = "";
-                        CPasswordBoxConfrim.Password = "";
+            //        UserName = CUserNameBox.Text;
+            //        Password = CPasswordBox.Password;
+            //        if (Password != CPasswordBoxConfrim.Password)
+            //        {
+            //            CPasswordInvalid.Visibility = Visibility.Visible;
+            //            UserName = null;
+            //            Password = null;
+            //            CPasswordBox.Password = "";
+            //            CPasswordBoxConfrim.Password = "";
 
-                    }
-                    else
-                    {
-                        if (_sqlAccess.ValidateUserName(UserName, Password))
-                        {
-                            _userId = _sqlAccess.GetUserID(UserName);
-                            LoggedIn = true;
-                        }
-                        createACC.Visibility = Visibility.Collapsed;
-                        menuItems.Visibility = Visibility.Visible;
-                        PlayerGrid.Visibility = Visibility.Visible;
-                        SL.Visibility = Visibility.Visible;
-                        AP.Visibility = Visibility.Visible;
-                        ScrollView.Visibility = Visibility.Visible;
-                        playlistSP.Visibility = Visibility.Visible;
-                    }
+            //        }
+            //        else
+            //        {
+            //            if (_sqlAccess.ValidateUserName(UserName, Password))
+            //            {
+            //                _userId = _sqlAccess.GetUserID(UserName);
+            //                LoggedIn = true;
+            //            }
+            //            createACC.Visibility = Visibility.Collapsed;
+            //            menuItems.Visibility = Visibility.Visible;
+            //            PlayerGrid.Visibility = Visibility.Visible;
+            //            SL.Visibility = Visibility.Visible;
+            //            AP.Visibility = Visibility.Visible;
+            //            ScrollView.Visibility = Visibility.Visible;
+            //            playlistSP.Visibility = Visibility.Visible;
+            //        }
                 
              
-            }
-            catch (StackOverflowException)
-            {
+            //}
+            //catch (StackOverflowException)
+            //{
 
 
-            }
+            //}
         }
         public void ValidateUserName(string usrName, string pass)
         {
